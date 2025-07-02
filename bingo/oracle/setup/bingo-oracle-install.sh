@@ -185,7 +185,7 @@ if [ "$dbapass" = "" ]; then
   sqlplus $dbaname$instance @bingo_init.sql $bingoname $bingopass
 elif [ "$mode" = "autonomous" ]; then
   echo "Oracle Autonomous Database detected, using autonomous init script."
-  export TNS_ADMIN=/home/opc/wallet
+  export TNS_ADMIN=$tns_admin
   sqlplus $dbaname/$dbapass$instance @bingo_oracle_autonomous_init.sql $bingoname $bingopass $oracle_username $oracle_auth_token $wallet_uri $listener_url $listener_hostname
 else
   sqlplus $dbaname/$dbapass$instance @bingo_init.sql $bingoname $bingopass
