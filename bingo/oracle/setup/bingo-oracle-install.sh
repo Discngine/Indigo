@@ -44,8 +44,10 @@ echo '  -bingoname name'
 echo '    Name of cartridge pseudo-user (default "bingo").'
 echo '  -bingopass password'
 echo '    Password of the pseudo-user (default "bingo").'
-echo '  -mode mode'
-echo '    Mode of installation for now only autonomous is supported.'
+echo '  -db_type type'
+echo '  Type of Oracle database. Possible values:'
+echo '    - oracle_database (default)'
+echo '    - oracle_autonomous_database'
 echo '  -oracleusername name'
 echo '    Oracle username for Autonomous Database (required in autonomous mode). Example: idcs-federation/<your_email>'
 echo '  -oracleauthtoken token'
@@ -97,9 +99,9 @@ while [ "$#" != 0 ]; do
         shift
         bingopass=$1
         ;;
-     -mode)
+     -db_type)
         shift
-        mode=$1
+        db_type=$1
         ;;
      -oracleusername)
         shift
@@ -136,6 +138,8 @@ while [ "$#" != 0 ]; do
   shift
 done
 
+db_type=${db_type:-oracle_database}
+
 echo "Target directory  : $libdir";
 echo "DBA name          : $dbaname";
 if [ ! "$dbapass" = "" ]; then
@@ -148,6 +152,7 @@ else
 fi
 echo "Bingo name        : $bingoname";
 echo "Bingo password    : $bingopass";
+echo "Database type     : $db_type";
 
 if [ "$y" != "1" ]; then
   echo "Proceed (y/N)?"
@@ -165,7 +170,7 @@ fi
 
 mkdir -p $libdir
 
-if [ "$mode" != "autonomous" ]; then
+if [ "$db_type" != "oracle_autonomous_database" ]; then
   echo set verify off >sql/bingo/bingo_lib.sql 
   echo spool bingo_lib\; >>sql/bingo/bingo_lib.sql 
   echo create or replace LIBRARY bingolib AS \'$libdir/libbingo-oracle$libext\' >>sql/bingo/bingo_lib.sql 
@@ -183,7 +188,7 @@ fi
 cd sql/system
 if [ "$dbapass" = "" ]; then
   sqlplus $dbaname$instance @bingo_init.sql $bingoname $bingopass
-elif [ "$mode" = "autonomous" ]; then
+elif [ "$db_type" = "oracle_autonomous_database" ]; then
   echo "Oracle Autonomous Database detected, using autonomous init script."
   export TNS_ADMIN=$tns_admin
   sqlplus $dbaname/$dbapass$instance @bingo_oracle_autonomous_init.sql $bingoname $bingopass $oracle_username $oracle_auth_token $wallet_uri $listener_url $listener_hostname
@@ -192,7 +197,7 @@ else
 fi
 
 cd ../bingo
-if [ "$mode" = "autonomous" ]; then
+if [ "$db_type" = "oracle_autonomous_database" ]; then
   echo "Executing makebingo_autonomous.sql"
   sqlplus $bingoname/$bingopass$instance @makebingo_autonomous.sql
 else

@@ -78,7 +78,7 @@ Once the external procedure service is operational, proceed with the installatio
       -instance <service_profile> \
       -bingoname bingo \
       -bingopass <bingo_password> \
-      -mode autonomous \
+      -db_type oracle_autonomous_database \
       -oracleusername <oracle_cloud_username> \
       -oracleauthtoken <auth_token> \
       -walleturi <url_to_cwallet.sso> \

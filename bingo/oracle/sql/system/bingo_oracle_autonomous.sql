@@ -14,6 +14,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- Maintainer: the initial version of this installer is proposed by Discngine SAS. Although we do not provide any official support do not hesitate to open a Github issue and reach to support@discngine.com
+
 Define USER_NAME = &1
 Define USER_PASS = &2
 Define ORACLE_USERNAME = &3
